@@ -7,7 +7,8 @@ var retry = true;
 function _putNote() {
 	localStorage["text"] = $(this).parents("article").children(".content-body").text();
     retry = true;
-	chrome.extension.sendRequest({action: "get"}, function(response) {
+	//chrome.extension.sendRequest({action: "get"}, function(response) {
+    chrome.extension.sendMessage({action: "get"}, function(response) {
 		//console.log(response);
 		putNote(response);
 	});
@@ -50,7 +51,8 @@ function putNote(param) {
                 msg = res.message + "(" + res.detail + ")";
                 if(retry){
                     retry = false;
-                    chrome.extension.sendRequest({action: "set"}, function(response) {
+                    //chrome.extension.sendRequest({action: "set"}, function(response) {
+                    chrome.extension.sendMessage({action: "set"}, function(response) {
                         putNote(response);
                     });
                 }
@@ -109,13 +111,15 @@ $("body header h1").click(function (){
 $("body header h1").css("cursor", "pointer");
 
 function updateBadge() {
-    chrome.extension.sendRequest({action: "badge", number: count.toString()}, function(response) {
+    //chrome.extension.sendRequest({action: "badge", number: count.toString()}, function(response) {
+    chrome.extension.sendMessage({action: "badge", number: count.toString()}, function(response) {
         console.log(response);
     });
 }
 updateBadge();
 
-chrome.extension.onRequest.addListener(
+//chrome.extension.onRequest.addListener(
+chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) 
     {
         switch(request.action) 
@@ -129,3 +133,18 @@ chrome.extension.onRequest.addListener(
         }
     }
 );
+
+function scrollFloatWindow(event, delta) {
+    if(delta > 0 && $(this).scrollTop() <= 0){
+        return false;
+    } else if(delta < 0 && $(this).scrollTop() + $(this).height() >= $(this).get(0).scrollHeight){
+        return false;
+    }
+    console.log($(this).scrollTop() + $(this).height() + '/' + $(this).get(0).scrollHeight);
+}
+$(".conversation header").mousewheel(function(event, delta) { return false; });
+$(".conversation .post-form").mousewheel(function(event, delta) { return false; });
+$(".conversation .stream-items").mousewheel(scrollFloatWindow);
+$(".profile header").mousewheel(function(event, delta) { return false; });
+$(".profile .user-card").mousewheel(function(event, delta) { return false; });
+$(".profile .stream-items").mousewheel(scrollFloatWindow);

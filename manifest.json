@@ -14,7 +14,7 @@
    },
    "content_scripts": [ {
       "all_frames": true,
-      "js": [ "jquery-1.8.3.min.js", "contentscript.js" ],
+      "js": [ "jquery-1.8.3.min.js", "jquery.mousewheel.js", "contentscript.js" ],
       "matches": [ "http://iij.yamucha.jp/*", "https://sct.iijplus.jp/*" ],
       "run_at": "document_end"
    } ],

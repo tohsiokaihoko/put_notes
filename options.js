@@ -20,13 +20,11 @@ function get_token(account, password) {
                     localStorage["date"] = strNow;
                     $("#txtDate").text(strNow);
                     disply_success();
-                    //alert("Options saved.");
                     break;
                 // 失敗した場合はcode200以外とmessage, detailを返す。
                 default:
                     msg = res.message + "(" + res.detail + ")";
                     disply_error1(msg);
-                    //alert(msg);
                     break;
             }
             console.log(msg);
@@ -34,7 +32,6 @@ function get_token(account, password) {
         error: function(req, status, errorThrown) {
             console.log("get_token error/" + errorThrown);
             disply_error2();
-            //alert("get_token error/" + errorThrown);
         }
     });
 }
@@ -52,6 +49,11 @@ function save_options() {
 	// BoardId
 	var boardId = $("#txtBoardId").val();
 	localStorage["boardId"] = boardId;
+
+    // for mail server
+    localStorage["mailServer"] = $("#txtMailServer").val();
+    localStorage["mailAddress"] = $("#txtMailAddress").val();
+    localStorage["mailPassword"] = $("#txtMailPassword").val();
 
 	get_token(account, password);
 }
@@ -74,6 +76,10 @@ function restore_options() {
     if (date) {
         $("#txtDate").text(date);
     }
+
+    $("#txtMailServer").val(localStorage["mailServer"]);
+    $("#txtMailAddress").val(localStorage["mailAddress"]);
+    $("#txtMailPassword").val(localStorage["mailPassword"]);
 }
 
 $(document).ready(restore_options);
@@ -118,3 +124,31 @@ function disply_error2() {
     disply_message("alert-error", "Error!", "Network error.");
 }
 
+function onSocketOpen() {
+    chrome.extension.sendMessage({action: "open"}, function(response) {
+        console.log("onOpen");
+    });
+}
+function onSocketClose() {
+    chrome.extension.sendMessage({action: "close"}, function(response) {
+        console.log("onClose");
+    });
+}
+function onLogin() {
+    var mailServer = $("#txtMailServer").val();
+    var mailAddress = $("#txtMailAddress").val();
+    var password = $("#txtMailPassword").val();
+    chrome.extension.sendMessage({action: "login", mailServer:mailServer, mailAddress:mailAddress, password:password}, function(response) {
+        console.log("onLogin");
+    });
+}
+function onLogout() {
+    chrome.extension.sendMessage({action: "logout"}, function(response) {
+        console.log("onLogout");
+    });
+}
+
+$("#btnOpen").click(onSocketOpen);
+$("#btnClose").click(onSocketClose);
+$("#btnLogin").click(onLogin);
+$("#btnLogout").click(onLogout);
