@@ -26,7 +26,7 @@ function putNote(param) {
     $.ajax(
     {
         type:"POST",
-        url:"https://hotate-stg.bob.iiji.jp:4000/api/boards/add",
+        url:"https://hotate-stg.bob.iiji.jp:4000/api/boards/addNote",
         data: 
         {
             token: token,
@@ -118,7 +118,6 @@ function updateBadge() {
 }
 updateBadge();
 
-//chrome.extension.onRequest.addListener(
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) 
     {
